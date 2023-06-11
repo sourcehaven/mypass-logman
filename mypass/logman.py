@@ -10,7 +10,7 @@ from .utils import BearerAuth
 ACCESS_TOKEN = 'access_token'
 REFRESH_TOKEN = 'refresh_token'
 
-SIGNIN = '/api/auth/signin'
+LOGIN = '/api/auth/login'
 REFRESH = '/api/auth/refresh'
 LOGOUT = '/api/auth/logout'
 
@@ -26,12 +26,12 @@ def get_proxy_from_port(host: str, port: int):
     }
 
 
-def signin(pw: str, host: str, *, proxies: dict = None, port: int = None, endpoint: str = None):
+def login(pw: str, host: str, *, proxies: dict = None, port: int = None, endpoint: str = None):
     assert proxies is None or port is None, 'Specifying both proxies and port at the same time is invalid.'
     if port is not None:
         proxies = get_proxy_from_port(host, port)
     if endpoint is None:
-        endpoint = SIGNIN
+        endpoint = LOGIN
 
     resp = requests.post(f'{host}{endpoint}', proxies=proxies, json={'pw': pw})
     if resp.status_code == 201:
