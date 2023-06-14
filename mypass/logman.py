@@ -26,14 +26,18 @@ def get_proxy_from_port(host: str, port: int):
     }
 
 
-def login(pw: str, host: str, *, proxies: dict = None, port: int = None, endpoint: str = None):
+def login(pw: str, user: str = None, *, host: str, proxies: dict = None, port: int = None, endpoint: str = None):
     assert proxies is None or port is None, 'Specifying both proxies and port at the same time is invalid.'
     if port is not None:
         proxies = get_proxy_from_port(host, port)
     if endpoint is None:
         endpoint = LOGIN
 
-    resp = requests.post(f'{host}{endpoint}', proxies=proxies, json={'pw': pw})
+    request_obj = {'pw': pw}
+    if user is not None:
+        request_obj['user'] = user
+
+    resp = requests.post(f'{host}{endpoint}', proxies=proxies, json=request_obj)
     if resp.status_code == 201:
         tokens = resp.json()
         access_token = tokens[ACCESS_TOKEN]
@@ -42,7 +46,7 @@ def login(pw: str, host: str, *, proxies: dict = None, port: int = None, endpoin
         session[REFRESH_TOKEN] = refresh_token
 
 
-def refresh(host: str, *, proxies: dict = None, port: int = None, endpoint: str = None):
+def refresh(*, host: str, proxies: dict = None, port: int = None, endpoint: str = None):
     assert proxies is None or port is None, 'Specifying both proxies and port at the same time is invalid.'
     if port is not None:
         proxies = get_proxy_from_port(host, port)
@@ -58,7 +62,7 @@ def refresh(host: str, *, proxies: dict = None, port: int = None, endpoint: str 
         session[ACCESS_TOKEN] = access_token
 
 
-def logout(host: str, *, proxies: dict = None, port: int = None, endpoint: str = None):
+def logout(*, host: str, proxies: dict = None, port: int = None, endpoint: str = None):
     assert proxies is None or port is None, 'Specifying both proxies and port at the same time is invalid.'
     if port is not None:
         proxies = get_proxy_from_port(host, port)
